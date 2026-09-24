@@ -6,8 +6,12 @@ worked before moving on.
 
 ```
 curl -fsSL https://raw.githubusercontent.com/xatuke/usbshare/main/install.sh | bash
-usbshare setup
 ```
+
+That installs the tool and drops you straight into the guided setup. iPhone
+only: Android lets you edit APN proxy settings directly, and
+[gnirehtet](https://github.com/Genymobile/gnirehtet) does full reverse
+tethering there.
 
 Use it when the phone can't join the Wi-Fi the Mac is on (corporate or
 captive networks, MAC filtering, device limits) or when you'd rather not burn
