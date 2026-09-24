@@ -4,7 +4,7 @@
 set -e
 REPO="${USBSHARE_REPO:-https://raw.githubusercontent.com/xatuke/usbshare/main}"
 [ "$(uname)" = Darwin ] || { echo "usbshare is macOS only."; exit 1; }
-if [ -w /usr/local/bin ]; then DEST=/usr/local/bin; else DEST="$HOME/.local/bin"; mkdir -p "$DEST"; fi
+if [ -w /opt/homebrew/bin ]; then DEST=/opt/homebrew/bin; elif [ -w /usr/local/bin ]; then DEST=/usr/local/bin; else DEST="$HOME/.local/bin"; mkdir -p "$DEST"; fi
 if [ -f "$(dirname "$0")/usbshare" ] && [ "${1:-}" != "--remote" ]; then
   cp "$(dirname "$0")/usbshare" "$DEST/usbshare"
 else
