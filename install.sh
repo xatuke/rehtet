@@ -1,10 +1,10 @@
 #!/bin/bash
 # rehtet installer. Usage:
-#   curl -fsSL https://raw.githubusercontent.com/xatuke/rehtet/main/install.sh | bash
+#   curl -fsSL https://xatuke.github.io/rehtet/install.sh | bash
 # Installs rehtet (and tinyproxy via Homebrew), then starts "rehtet setup".
 # Set REHTET_NO_SETUP=1 to only install.
 set -e
-REPO="${REHTET_REPO:-https://raw.githubusercontent.com/xatuke/rehtet/main}"
+REPO="${REHTET_REPO:-https://xatuke.github.io/rehtet}"
 [ "$(uname)" = Darwin ] || { echo "rehtet is macOS only."; exit 1; }
 if [ -w /opt/homebrew/bin ]; then DEST=/opt/homebrew/bin; elif [ -w /usr/local/bin ]; then DEST=/usr/local/bin; else DEST="$HOME/.local/bin"; mkdir -p "$DEST"; fi
 if [ -f "$(dirname "$0")/rehtet" ] && [ "${1:-}" != "--remote" ]; then

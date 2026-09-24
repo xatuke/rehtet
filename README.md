@@ -5,7 +5,7 @@ extra hardware, no VPN app. A guided setup that checks each step actually
 worked before moving on.
 
 ```
-curl -fsSL https://raw.githubusercontent.com/xatuke/rehtet/main/install.sh | bash
+curl -fsSL https://xatuke.github.io/rehtet/install.sh | bash
 ```
 
 That installs the tool and drops you straight into the guided setup. iPhone
