@@ -1,6 +1,6 @@
 #!/bin/bash
-# usbshare - share your Mac's Wi-Fi with an iPhone over a USB-C cable.
-# https://github.com/xatuke/usbshare
+# rehtet - share your Mac's Wi-Fi with an iPhone over a USB-C cable.
+# https://github.com/xatuke/rehtet
 #
 # How it works: the iPhone's Personal Hotspot over USB gives the Mac and the
 # phone an IP link. A small HTTP proxy on the Mac listens on that link, and a
@@ -10,12 +10,12 @@
 
 set -u
 VERSION="0.1.0"
-CFG_DIR="$HOME/.usbshare"
+CFG_DIR="$HOME/.rehtet"
 CFG="$CFG_DIR/config"
 PROXY_CONF="$CFG_DIR/tinyproxy.conf"
 PROXY_LOG="$CFG_DIR/proxy.log"
 PROXY_PID="$CFG_DIR/proxy.pid"
-PROFILE="$CFG_DIR/usbshare.mobileconfig"
+PROFILE="$CFG_DIR/rehtet.mobileconfig"
 SERVE_PID="$CFG_DIR/serve.pid"
 HITS="$CFG_DIR/profile-hits.log"
 PROXY_PORT=8888
@@ -177,7 +177,7 @@ make_profile() {
     <dict>
       <key>PayloadType</key><string>com.apple.cellular</string>
       <key>PayloadVersion</key><integer>1</integer>
-      <key>PayloadIdentifier</key><string>local.usbshare.cellular</string>
+      <key>PayloadIdentifier</key><string>local.rehtet.cellular</string>
       <key>PayloadUUID</key><string>$u1</string>
       <key>PayloadDisplayName</key><string>Cellular APN + USB proxy</string>
       <key>APNs</key>
@@ -192,9 +192,9 @@ make_profile() {
       </array>
     </dict>
   </array>
-  <key>PayloadDisplayName</key><string>usbshare (internet via Mac USB)</string>
+  <key>PayloadDisplayName</key><string>rehtet (internet via Mac USB)</string>
   <key>PayloadDescription</key><string>Sends this phone's web traffic through the Mac it is plugged into. Remove this profile to go back to normal cellular data.</string>
-  <key>PayloadIdentifier</key><string>local.usbshare</string>
+  <key>PayloadIdentifier</key><string>local.rehtet</string>
   <key>PayloadRemovalDisallowed</key><false/>
   <key>PayloadType</key><string>Configuration</string>
   <key>PayloadUUID</key><string>$u2</string>
@@ -230,13 +230,13 @@ install_profile_flow() {
   start_serve
   step "Install the profile on the phone"
   say "On the phone, open Safari and go to:"
-  printf '\n    %shttp://%s:%s/usbshare.mobileconfig%s\n\n' "$B" "$LINK_ADDR" "$PROFILE_PORT" "$N"
+  printf '\n    %shttp://%s:%s/rehtet.mobileconfig%s\n\n' "$B" "$LINK_ADDR" "$PROFILE_PORT" "$N"
   say "Safari will say the website is trying to download a configuration profile. Tap Allow."
   say "Waiting for the phone to fetch it"
   local t=0
   while ! grep -q "GET " "$HITS" 2>/dev/null; do
     sleep 1; dot; t=$((t+1))
-    [ $t -eq 40 ] && { echo; hint "Nothing yet. Type the address exactly, including http:// and the port."; hint "If the page does not load at all, the hotspot link dropped: run 'usbshare status' in another terminal."; }
+    [ $t -eq 40 ] && { echo; hint "Nothing yet. Type the address exactly, including http:// and the port."; hint "If the page does not load at all, the hotspot link dropped: run 'rehtet status' in another terminal."; }
   done; echo
   ok "Phone downloaded the profile"
   stop_serve
@@ -299,12 +299,12 @@ verify_flow() {
   if yesno "Does the phone load websites right now (over cellular)?"; then
     say "Then the profile is installed but not in effect. Usual causes:"
     hint "The Airplane Mode cycle was skipped or too short. Do it again (on, wait 10 s, off, hotspot on)."
-    hint "Settings > General > VPN & Device Management: the usbshare profile should be listed. If not, install it."
+    hint "Settings > General > VPN & Device Management: the rehtet profile should be listed. If not, install it."
     hint "Your carrier locks APN settings (Jio does). Try a SIM from a carrier that does not, or use the wired fallback."
   else
     say "Then the phone is sending to the proxy but cannot reach it. Usual causes:"
-    hint "Hotspot link down: run 'usbshare start' and it will bring it back up."
-    hint "The Mac got a different address than the profile expects: 'usbshare profile' regenerates and reinstalls it."
+    hint "Hotspot link down: run 'rehtet start' and it will bring it back up."
+    hint "The Mac got a different address than the profile expects: 'rehtet profile' regenerates and reinstalls it."
   fi
   return 1
 }
@@ -341,12 +341,12 @@ LIST
   done
   ok "APN: $APN"
   say "${D}Tip: if Settings > Cellular > Cellular Data Network exists on your phone, the APN shown there is the right one,${N}"
-  say "${D}and you could type the proxy in there directly. usbshare handles the carriers that hide that screen.${N}"
+  say "${D}and you could type the proxy in there directly. rehtet handles the carriers that hide that screen.${N}"
 }
 
 cmd_setup() {
   load_cfg
-  printf '%susbshare %s%s - share this Mac'"'"'s Wi-Fi with your iPhone over a USB-C cable\n' "$B" "$VERSION" "$N"
+  printf '%srehtet %s%s - share this Mac'"'"'s Wi-Fi with your iPhone over a USB-C cable\n' "$B" "$VERSION" "$N"
   say
   say "What you need: a Mac on Wi-Fi, an iPhone with a SIM that has cellular data,"
   say "and a USB-C data cable. Takes about 3 minutes. Each step waits until it has"
@@ -381,29 +381,29 @@ cmd_setup() {
     say "Your phone's web traffic now goes through this Mac's Wi-Fi over the cable."
     say
     say "Day to day:"
-    say "  ${B}usbshare start${N}   after plugging in (brings the link up, starts the proxy)"
-    say "  ${B}usbshare stop${N}    when you unplug"
-    say "  ${B}usbshare status${N}  to see what is going on"
+    say "  ${B}rehtet start${N}   after plugging in (brings the link up, starts the proxy)"
+    say "  ${B}rehtet stop${N}    when you unplug"
+    say "  ${B}rehtet status${N}  to see what is going on"
     say
     warn "While the profile is installed and the Mac is not attached, the phone has no web access."
     say "Remove it under Settings > General > VPN & Device Management to get normal data back,"
-    say "and run ${B}usbshare profile${N} to reinstall it later."
+    say "and run ${B}rehtet profile${N} to reinstall it later."
     say "Only HTTP/HTTPS goes through the Mac; push notifications and iMessage still use cellular."
   else
-    say; say "Fix the cause above, then run ${B}usbshare start${N} (link + proxy) or ${B}usbshare setup${N} again."
+    say; say "Fix the cause above, then run ${B}rehtet start${N} (link + proxy) or ${B}rehtet setup${N} again."
     exit 1
   fi
 }
 
 cmd_start() {
   load_cfg
-  [ -n "$APN" ] || { fail "Not set up yet. Run: usbshare setup"; exit 1; }
+  [ -n "$APN" ] || { fail "Not set up yet. Run: rehtet setup"; exit 1; }
   need_tinyproxy || exit 1
   local old="$LINK_ADDR"
   link_up || exit 1
   if [ -n "$old" ] && [ "$LINK_ADDR" != "$old" ]; then
     warn "The Mac's address on the link is $LINK_ADDR but the phone's profile points at $old."
-    say "Run ${B}usbshare profile${N} to regenerate and reinstall the profile."
+    say "Run ${B}rehtet profile${N} to regenerate and reinstall the profile."
     exit 1
   fi
   save_cfg
@@ -412,7 +412,7 @@ cmd_start() {
   local base t=0 n; base=$(phone_hits)
   while :; do n=$(phone_hits); [ "$n" -gt "$base" ] && break; sleep 1; dot; t=$((t+1)); [ $t -ge 45 ] && break; done; echo
   if [ "$n" -gt "$base" ]; then ok "Phone traffic is flowing through the Mac."
-  else warn "No traffic seen yet. If the phone loads pages but slowly or not at all, run: usbshare status"; fi
+  else warn "No traffic seen yet. If the phone loads pages but slowly or not at all, run: rehtet status"; fi
 }
 
 cmd_stop() { load_cfg; stop_proxy; stop_serve; ok "Proxy stopped. Remove the profile on the phone if you are leaving the Mac behind."; }
@@ -420,12 +420,12 @@ cmd_stop() { load_cfg; stop_proxy; stop_serve; ok "Proxy stopped. Remove the pro
 cmd_status() {
   load_cfg
   local IF; IF=$(usb_iface)
-  say "${B}usbshare status${N}"
+  say "${B}rehtet status${N}"
   phone_on_usb && ok "iPhone on USB" || fail "No iPhone on USB"
   if iface_exists "$IF"; then
     local a; a=$(link_addr "$IF")
-    if [ -n "$a" ]; then ok "Hotspot link $IF up: Mac $a, phone $(link_router "$IF")"; else fail "Hotspot link $IF present but no address (hotspot off? run: usbshare start)"; fi
-    [ -n "$LINK_ADDR" ] && [ -n "$a" ] && [ "$a" != "$LINK_ADDR" ] && warn "Profile expects $LINK_ADDR, link is $a (run: usbshare profile)"
+    if [ -n "$a" ]; then ok "Hotspot link $IF up: Mac $a, phone $(link_router "$IF")"; else fail "Hotspot link $IF present but no address (hotspot off? run: rehtet start)"; fi
+    [ -n "$LINK_ADDR" ] && [ -n "$a" ] && [ "$a" != "$LINK_ADDR" ] && warn "Profile expects $LINK_ADDR, link is $a (run: rehtet profile)"
   else fail "No hotspot link (Personal Hotspot off or phone not offering it; replug)"; fi
   proxy_running && ok "Proxy running on ${LINK_ADDR:-?}:$PROXY_PORT ($(phone_hits) connections from the phone so far)" || fail "Proxy not running"
   say "  Mac default route: $(default_iface) $( [ "$(default_iface)" = "$(wifi_iface)" ] && echo '(Wi-Fi)' || echo '(not Wi-Fi!)')"
@@ -434,12 +434,12 @@ cmd_status() {
 
 cmd_profile() {
   load_cfg
-  [ -n "$APN" ] || { fail "Not set up yet. Run: usbshare setup"; exit 1; }
+  [ -n "$APN" ] || { fail "Not set up yet. Run: rehtet setup"; exit 1; }
   need_tinyproxy || exit 1
   link_up || exit 1; save_cfg
   start_proxy || exit 1
-  say; say "If an older usbshare profile is on the phone, remove it first:"
-  say "Settings > General > VPN & Device Management > usbshare > Remove Profile."
+  say; say "If an older rehtet profile is on the phone, remove it first:"
+  say "Settings > General > VPN & Device Management > rehtet > Remove Profile."
   install_profile_flow && apply_profile_flow && save_cfg && verify_flow
 }
 
@@ -447,20 +447,20 @@ cmd_uninstall() {
   load_cfg; stop_proxy; stop_serve
   rm -rf "$CFG_DIR"
   ok "Removed $CFG_DIR and stopped the proxy."
-  say "On the phone: Settings > General > VPN & Device Management > usbshare > Remove Profile."
+  say "On the phone: Settings > General > VPN & Device Management > rehtet > Remove Profile."
   say "Then delete this script (and 'brew uninstall tinyproxy' if you no longer need it)."
 }
 
 cmd_help() {
   cat <<H
-${B}usbshare $VERSION${N} - share your Mac's Wi-Fi with an iPhone over a USB-C cable
+${B}rehtet $VERSION${N} - share your Mac's Wi-Fi with an iPhone over a USB-C cable
 
-  usbshare setup      guided first-time setup (about 3 minutes)
-  usbshare start      after plugging the phone in: bring the link up, start the proxy
-  usbshare stop       stop the proxy
-  usbshare status     show link, proxy, and traffic state
-  usbshare profile    regenerate the phone profile and walk through reinstalling it
-  usbshare uninstall  remove config and stop everything
+  rehtet setup      guided first-time setup (about 3 minutes)
+  rehtet start      after plugging the phone in: bring the link up, start the proxy
+  rehtet stop       stop the proxy
+  rehtet status     show link, proxy, and traffic state
+  rehtet profile    regenerate the phone profile and walk through reinstalling it
+  rehtet uninstall  remove config and stop everything
 
 How it works: the phone's Personal Hotspot over USB gives the Mac and phone a
 private link. A tiny HTTP proxy on the Mac listens on it, and a cellular APN
@@ -474,7 +474,7 @@ settings (Jio, Verizon, AT&T) do not work.
 H
 }
 
-[ "${USBSHARE_LIB:-}" = 1 ] && return 0 2>/dev/null
+[ "${REHTET_LIB:-}" = 1 ] && return 0 2>/dev/null
 case "${1:-help}" in
   setup) cmd_setup;; start) cmd_start;; stop) cmd_stop;; status) cmd_status;;
   profile) cmd_profile;; uninstall) cmd_uninstall;; -v|--version) echo "$VERSION";;

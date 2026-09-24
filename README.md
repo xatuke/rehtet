@@ -1,11 +1,11 @@
-# usbshare
+# rehtet
 
 Share your Mac's Wi-Fi with an iPhone over a USB-C cable. No jailbreak, no
 extra hardware, no VPN app. A guided setup that checks each step actually
 worked before moving on.
 
 ```
-curl -fsSL https://raw.githubusercontent.com/xatuke/usbshare/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xatuke/rehtet/main/install.sh | bash
 ```
 
 That installs the tool and drops you straight into the guided setup. iPhone
@@ -28,23 +28,23 @@ cellular data.
 
 | Command | What it does |
 |---|---|
-| `usbshare setup` | First-time guided setup, about 3 minutes |
-| `usbshare start` | After plugging the phone in: bring the link up, start the proxy, confirm traffic |
-| `usbshare stop` | Stop the proxy |
-| `usbshare status` | Phone on USB? Link up? Proxy running? Traffic flowing? |
-| `usbshare profile` | Regenerate the phone profile and walk through reinstalling it |
-| `usbshare uninstall` | Remove everything on the Mac and tell you how to remove the profile on the phone |
+| `rehtet setup` | First-time guided setup, about 3 minutes |
+| `rehtet start` | After plugging the phone in: bring the link up, start the proxy, confirm traffic |
+| `rehtet stop` | Stop the proxy |
+| `rehtet status` | Phone on USB? Link up? Proxy running? Traffic flowing? |
+| `rehtet profile` | Regenerate the phone profile and walk through reinstalling it |
+| `rehtet uninstall` | Remove everything on the Mac and tell you how to remove the profile on the phone |
 
 ## How it works
 
 iOS has no "use the computer's internet" mode over USB, and macOS won't share
-a Wi-Fi connection back out over Wi-Fi. usbshare uses three things that do
+a Wi-Fi connection back out over Wi-Fi. rehtet uses three things that do
 exist:
 
 1. **Personal Hotspot over USB, used backwards.** With the hotspot on and the
    phone plugged in, the phone gives the Mac a private network link (phone
    `172.20.10.1`, Mac `172.20.10.x`). Normally the Mac uses it to reach the
-   phone's cellular data. usbshare keeps the Mac's own internet on Wi-Fi and
+   phone's cellular data. rehtet keeps the Mac's own internet on Wi-Fi and
    uses the link only as a path *from the phone to the Mac*.
 2. **A small HTTP proxy on the Mac** (`tinyproxy`) listening on that link, and
    only on that link.
@@ -69,7 +69,7 @@ prints a specific hint when a step stalls.
   cellular data.
 - **With the profile installed and the Mac not attached, the phone has no web
   access.** Remove the profile (Settings > General > VPN & Device Management >
-  usbshare > Remove Profile) to get normal data back. `usbshare profile`
+  rehtet > Remove Profile) to get normal data back. `rehtet profile`
   reinstalls it later.
 - **Carriers that lock APN settings don't work.** Known: Jio (India), Verizon
   and AT&T (US). Airtel (India), T-Mobile (US), EE/O2/Three (UK) and most
@@ -77,7 +77,7 @@ prints a specific hint when a step stalls.
   step.
 - The profile is unsigned (your Mac generates it), so iOS shows a "Not
   Signed" warning on install. Its full contents are at
-  `~/.usbshare/usbshare.mobileconfig`.
+  `~/.rehtet/rehtet.mobileconfig`.
 - Speed is whatever the Mac's Wi-Fi gives, minus a little proxy overhead.
 
 ## Troubleshooting
@@ -86,14 +86,14 @@ prints a specific hint when a step stalls.
   on USB without it (happens after Airplane Mode). Unplug, wait 5 s, replug.
   If needed, toggle the hotspot off and on while plugged in.
 - **Link present but no address**: macOS sometimes leaves the interface
-  switched off. `usbshare start` fixes it (asks for your password once).
+  switched off. `rehtet start` fixes it (asks for your password once).
 - **Phone loads pages but `status` shows 0 connections**: the profile isn't in
   effect. Do the Airplane Mode cycle (on, wait 10 s, off, hotspot back on), or
   the carrier locks APN settings.
 - **Phone loads nothing**: the profile is in effect but the proxy is
-  unreachable. Run `usbshare status`; if the Mac's link address differs from
-  what the profile expects, run `usbshare profile`.
-- **Mac lost internet or got slow**: check `usbshare status` says the default
+  unreachable. Run `rehtet status`; if the Mac's link address differs from
+  what the profile expects, run `rehtet profile`.
+- **Mac lost internet or got slow**: check `rehtet status` says the default
   route is Wi-Fi. The wizard sets Wi-Fi first in the network service order so
   the Mac never uses the phone's cellular data for itself.
 
@@ -120,9 +120,9 @@ a normal Ethernet connection.
 ## Uninstall
 
 ```
-usbshare uninstall
+rehtet uninstall
 brew uninstall tinyproxy   # optional
-rm "$(command -v usbshare)"
+rm "$(command -v rehtet)"
 ```
 and remove the profile on the phone.
 
