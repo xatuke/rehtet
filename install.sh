@@ -10,7 +10,7 @@ if [ -w /opt/homebrew/bin ]; then DEST=/opt/homebrew/bin; elif [ -w /usr/local/b
 if [ -f "$(dirname "$0")/rehtet" ] && [ "${1:-}" != "--remote" ]; then
   cp "$(dirname "$0")/rehtet" "$DEST/rehtet"
 else
-  curl -fsSL "$REPO/rehtet" -o "$DEST/rehtet"
+  curl -fsSL "$REPO/rehtet?$(date +%s)" -o "$DEST/rehtet"   # query string sidesteps the raw CDN cache
 fi
 chmod +x "$DEST/rehtet"
 echo "Installed to $DEST/rehtet"
