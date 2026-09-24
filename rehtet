@@ -34,7 +34,7 @@ fail() { printf '%s✘%s %s\n' "$R" "$N" "$*"; }
 hint() { printf '  %s→ %s%s\n' "$C" "$*" "$N"; }
 step() { printf '\n%s%s%s\n' "$B" "$*" "$N"; }
 pause(){ printf '%s' "${D}Press Enter when done.${N} "; read -r _; }
-ask()  { local a; printf '%s ' "$1"; read -r a; printf '%s' "$a"; }
+ask()  { local a; printf '%s ' "$1" >&2; read -r a; printf '%s' "$a"; }
 yesno(){ local a; while true; do printf '%s [y/n] ' "$1"; read -r a; case "$a" in y|Y) return 0;; n|N) return 1;; esac; done; }
 dot()  { printf '.'; }
 
@@ -314,6 +314,7 @@ carrier_pick() {
   step "Your carrier"
   say "The profile must carry your carrier's APN name (the same one it already uses)."
   say "Pick one, or choose custom if yours is not listed. ${D}Verify on your carrier's website if unsure.${N}"
+  say "Two SIMs? Pick the carrier of the SIM used for data: Settings > Cellular > Cellular Data."
   cat <<LIST
    1) Airtel (India)        airtelgprs.com
    2) Vi / Vodafone (India) www
