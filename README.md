@@ -1,6 +1,6 @@
 # rehtet
 
-Share your Mac's Wi-Fi with an iPhone over a USB-C cable. No jailbreak, no
+*tether, reversed.* Share your Mac's Wi-Fi with an iPhone over a USB-C cable. No jailbreak, no
 extra hardware, no VPN app. A guided setup that checks each step actually
 worked before moving on.
 
